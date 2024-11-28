@@ -81,6 +81,11 @@ RUN export TORCH_CUDA_ARCH_LIST="$(echo "$CUDA_ARCHITECTURES" | tr ';' '\n' | aw
     pip install --no-cache-dir /tmp/nerfstudio 'numpy<2.0.0' && \
     rm -rf /tmp/nerfstudio
 
+RUN export TORCH_CUDA_ARCH_LIST="$(echo "$CUDA_ARCHITECTURES" | tr ';' '\n' | awk '$0 > 70 {print substr($0,1,1)"."substr($0,2)}' | tr '\n' ' ' | sed 's/ $//')" && \
+    pip install --no-cache-dir "git+https://github.com/brian-xu/zipnerf-pytorch#subdirectory=extensions/cuda" && \
+    pip install --no-cache-dir "git+https://github.com/brian-xu/zipnerf-pytorch" && \
+    pip install torch-scatter -f "https://pytorch-geometric.com/whl/torch-2.1.2%2Bcu118.html"
+    
 # Fix permissions
 RUN chmod -R go=u /usr/local/lib/python3.10 && \
     chmod -R go=u /build
